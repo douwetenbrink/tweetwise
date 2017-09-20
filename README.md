@@ -4,11 +4,12 @@ Tweetwise is my attempt to create an automated system for Bitcoin trading, imple
 
 
 ## Twitter + Bitcoin data ##
-(*Updated August 30th, 2017*)
-
 I spent ~4 months collecting data, based on the methods described in the paper. You can download the data [here](https://drive.google.com/open?id=0BzqCBdvJ6j-nUzRZckRJUVJwY00).
 
 To help you save time, I have included the processed tweet data, which is formatted according to the methods described in the paper (stop words, duplicate tweets, non-english words, etc).
+
+(*Update September 19th, 2017*)
+I took the liberty of creating features.csv, which includes sentiment values derived from NLTK. Each line in features.csv represents one hour of twitter data. Each hour includes the average sentiment, the corresponding Bitcoin volume, and the Bitcoin price change from the previous hour.
 
 
 ## References ##
