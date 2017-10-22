@@ -1,12 +1,12 @@
 '''
-collect_tweets.py
 Includes functions for retrieving and storing bitcoin prices
+This is intended to run every hour.
 
 Created by Miles Luders
 '''
 
 import requests
-
+import sentiment
 
 def get_btc_info():
     try:

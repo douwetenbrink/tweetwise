@@ -1,17 +1,27 @@
 '''
-collect_tweets.py
-Includes functions for retrieving and storing tweets
+Includes functions for retrieving and storing tweets.
+This is intended to be called every minute.
 
 Created by Miles Luders
 '''
 
-import tweepy, tweetwise_config, datetime, uuid
+import argparse, json, datetime, uuid, tweepy, tweetwise_config
+
+
+class Tweet:
+    def __init__(self, author, text, created_at):
+        self.author = author
+        self.text = text
+        self.created_at = created_at
+    
+    def as_json(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True)
 
 
 def authenticate():
     try:
-        # Get api credentials from config file 
-        # (config file is placed in .gitignore for security purposes)
+        # Get api credentials from config file.
+        # (config file is added to .gitignore for security)
         consumer_key = tweetwise_config.CONSUMER_KEY
         consumer_secret = tweetwise_config.CONSUMER_SECRET
         access_token = tweetwise_config.ACCESS_TOKEN
@@ -32,37 +42,51 @@ def get_latest_tweets(query, count):
     api = authenticate()
     if (api):        
         try:
-            public_tweets = [(tweet.author.screen_name, 
-                          tweet.text,
-                          tweet.created_at.isoformat())
-                          for tweet in api.search(q=query, count=count, lang='en')]
+            for tweet in api.search(q=query, count=count, lang='en'):
+                public_tweets.append(Tweet(tweet.author.screen_name,
+                                           tweet.text,
+                                           tweet.created_at.isoformat()))
         except:
-            print("Tweepy request failed.")
+            print("Tweepy request failed. Could not get tweets.")
     
     return public_tweets
 
 
 def write_tweets_to_file(fname, tweets):
     if len(tweets) == 0:
-        print("Number of tweets to write is zero.")
+        print("No tweets to write.")
         return
 
     try:
+        count = 0
         with open(fname, 'a') as f:
             for t in tweets:
-                for a in t:
-                    f.write(a+"\n")
-            
-                #f.write(str(uuid.uuid(4))
-                f.write("\n")
+                f.write(t.as_json()+"\n")
+                count += 1
                 
-        print("Successfully wrote", len(tweets), "tweets")
+        print("Successfully wrote", count, "tweets")
     except:
         print("Error writing tweets to '" + fname + "'")
     
 
 if __name__ == '__main__':
-        d = datetime.datetime.now()
-        print("Getting tweets... (", d, ")")
-        T = get_latest_tweets('bitcoin', 11)
-        write_tweets_to_file('output.txt', T)
+    print("Getting tweets... (", datetime.datetime.now(), ")")
+
+    # Create an argument parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--out", help="Output file", required=True)
+    args = parser.parse_args()
+
+    
+    # The query string can be changed to whatever
+    # you'd like. I use "bitcoin," as this is the 
+    # query used in Colianni et al. At the moment,
+    # the query string must be a single word.
+    query_string = 'bitcoin'
+    
+
+    # The Twitter API allows 180 calls every 15 mins.
+    # The number 11 gives us 165 calls per 15 mins,
+    # putting us right under the limit.
+    T = get_latest_tweets(query_string, 4)
+    write_tweets_to_file(args.out, T)

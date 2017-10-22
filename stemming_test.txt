@@ -1,2 +1,0 @@
-The algorithm as described in the paper could be exactly replicated
-by adjusting the points
