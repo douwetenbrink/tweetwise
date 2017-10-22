@@ -2,3 +2,5 @@
 venv
 tweetwise_config.py
 __pycache__
+tweets.txt
+prices.txt
