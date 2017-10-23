@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     # Create an argument parser
     parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--out", help="Output file", required=True)
+    parser.add_argument("-o", "--output", help="Output file", required=True)
     args = parser.parse_args()
 
     
@@ -88,5 +88,5 @@ if __name__ == '__main__':
     # The Twitter API allows 180 calls every 15 mins.
     # The number 11 gives us 165 calls per 15 mins,
     # putting us right under the limit.
-    T = get_latest_tweets(query_string, 4)
-    write_tweets_to_file(args.out, T)
+    T = get_latest_tweets(query_string, 11)
+    write_tweets_to_file(args.output, T)

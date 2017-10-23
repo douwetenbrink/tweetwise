@@ -1,5 +1,4 @@
 '''
-format.py
 Includes methods for processing raw tweet data
 
 Created by Miles Luders

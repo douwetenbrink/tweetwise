@@ -22,5 +22,11 @@ def get_sentiment_for_tweets():
         for line in output:
             f.write(line+"\n")
 
+
+def calculate_sentiment(text):
+    sia = SIA()
+    return sia.polarity_scores(text)
+
+
 if __name__ == '__main__':
     get_sentiment_for_tweets()
