@@ -1,21 +1,40 @@
-import argparse, json, format, sentiment
+import argparse, json, format
+from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
+from datetime import datetime
 
 
 def process_tweets_from_file(fin, fout):
+    valid_count = 0
+    invalid_count = 0
+    sia = SIA()
     list_of_tweets = []
     with open(fin) as f:
         for line in f:
             j = json.loads(line)
+            try:
+                # validate date format
+                created_at = datetime.strptime(j['created_at'], '%Y-%m-%dT%H:%M:%S')
+                # datetime.strptime('2016-10-27 22:58:14', '%Y-%m-%d %H:%M:%S')
 
-            # text formatting
-            formatted_text = format.format_full(j['text'])
-            j['formatted_text'] = formatted_text
+                # text formatting
+                formatted_text = format.format_full(j['text'])
+                j['formatted_text'] = formatted_text
 
-            # sentiment
-            sent = sentiment.calculate_sentiment(formatted_text)
-            j['sentiment'] = sent
+                # sentiment
+                sent = sia.polarity_scores(formatted_text)
+                j['sentiment'] = sent
 
-            list_of_tweets.append(json.dumps(j))
+                list_of_tweets.append(json.dumps(j))
+                valid_count += 1
+                if (valid_count % 25000 == 0):
+                    print(valid_count)
+            except ValueError:
+                invalid_count += 1
+                if (invalid_count % 100 == 0):
+                    print('Invalid:' + str(created_at), j['created_at'])
+                continue
+
+            
     
     with open(fout, 'w') as f:
         for tweet in list_of_tweets:

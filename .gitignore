@@ -2,5 +2,11 @@
 venv
 tweetwise_config.py
 __pycache__
-tweets.txt
+raw_tweets.txt
+raw_tweets_copy.txt
+processed_tweets.txt
 prices.txt
+features.csv
+test_features.csv
+processed_tweets_tiny.txt
+data/
